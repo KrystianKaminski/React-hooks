@@ -10,8 +10,12 @@ const Search = React.memo(props => {
 
   useEffect(() => {
 
-    setTimeout(() => {
+   const timer = setTimeout(() => {
       if (enteredFilter === inputRef.current.value) {
+        const query =
+          enteredFilter.length === 0
+            ? ""
+            : `?orderBy="title"&equalTo="${enteredFilter}"`;
         fetch("https://react-hooks-basics.firebaseio.com/ingredients.json" + query)
           .then(response => response.json())
           .then(responseData => {
@@ -27,10 +31,9 @@ const Search = React.memo(props => {
           });
       }
     }, 500)
-    const query =
-      enteredFilter.length === 0
-        ? ""
-        : `?orderBy="title"&equalTo="${enteredFilter}"`;
+    return () => {
+      clearTimeout(timer)
+    }
   }, [enteredFilter, onLoadIngredients, inputRef]);
 
   return (
