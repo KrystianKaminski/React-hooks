@@ -21,7 +21,7 @@ const ingredientReducer = (currentIngredients, action) => {
 
 function Ingredients() {
   const [userIngredients, dispatch] = useReducer(ingredientReducer, []);
-  const { isLoading, error, data, sendRequest, reqExtra, reqIdentifier } = useHttp();
+  const { isLoading, error, data, sendRequest, reqExtra, reqIdentifier, clear } = useHttp();
 
   useEffect(() => {
     if (!isLoading && !error && reqIdentifier === 'REMOVE_INGREDIENT') {
@@ -35,7 +35,7 @@ function Ingredients() {
         }
       });
     }
-  }, [data, reqExtra, reqIdentifier, isLoading]);
+  }, [data, reqExtra, reqIdentifier, isLoading, error]);
 
   const filteredIngredientsHandler = useCallback(filteredIngredients => {
     dispatch({ type: "SET", ingredients: filteredIngredients });
@@ -49,28 +49,7 @@ function Ingredients() {
       ingredient,
       'ADD_INGREDIENT'
     );
-    // dispatchHttp({type: 'SEND'})
-    // fetch("https://react-hooks-basics.firebaseio.com/ingredients.json", {
-    //   method: "POST",
-    //   body: JSON.stringify(ingredient),
-    //   headers: {
-    //     "Content-Type": "application/json"
-    //   }
-    // })
-    //   .then(response => {
-    //   dispatchHttp({type: 'RESPONSE'})
-    //     return response.json();
-    //   })
-    //   .then(responseData => {
-    //     dispatch({
-    //       type: "ADD",
-    //       ingredient: {
-    //         id: responseData.name,
-    //         ...ingredient
-    //       }
-    //     });
-    //   });
-  }, []);
+  }, [sendRequest]);
 
   const removeIngredientHandler = useCallback(
     id => {
@@ -85,10 +64,6 @@ function Ingredients() {
     [sendRequest]
   );
 
-  const cleanError = useCallback(() => {
-    // dispatchHttp({type: 'CLEAR'})
-  }, []);
-
   const ingredientList = useMemo(() => {
     return (
       <IngredientList
@@ -100,7 +75,7 @@ function Ingredients() {
 
   return (
     <div className="App">
-      {error && <ErrorModal onClose={cleanError}>{error}</ErrorModal>}
+      {error && <ErrorModal onClose={clear}>{error}</ErrorModal>}
       <IngredientForm
         onAddIngredient={addIngredientHandler}
         loading={isLoading}
